@@ -46,7 +46,11 @@
         // 请求摄像头访问
         async function startCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({video: true});
+                const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                        facingMode: 'environment', // 使用后置摄像头
+                    }
+                });
                 const video = document.getElementById('cameraPreview');
                 video.srcObject = stream;
                 await video.play();
