@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Camera with Overlay</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: black;
+            touch-action: none;
+        }
+
+        #cameraPreview {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            position: fixed;
+            transform: rotateY(180deg); /* 镜像翻转 */
+        }
+
+        #overlayImage {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <video id="cameraPreview"></video>
+    <img id="overlayImage" alt="Overlay">
+    <input type="file" id="fileInput" accept="image/*">
+
+    <script>
+        // 请求摄像头访问
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({video: true});
+                const video = document.getElementById('cameraPreview');
+                video.srcObject = stream;
+                await video.play();
+            } catch (error) {
+               alert('摄像头访问失败：' + error);
+            }
+        }
+
+        // 点击屏幕打开文件选择
+        document.body.addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        // 处理图片选择
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.getElementById('overlayImage');
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', startCamera);
+        
+    </script>
+</body>
+</html>
